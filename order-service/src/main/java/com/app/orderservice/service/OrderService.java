@@ -21,7 +21,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     public void placeOrder(OrderRequest orderRequest) {
         List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList().stream()
@@ -39,8 +39,8 @@ public class OrderService {
         //http://localhost:8082/api/inventory?skuCode=item1&skuCode=item2
         //retrieve from response array of InventoryResponse objects
         //which contain boolean isInStock
-        InventoryResponse[] responseArray = webClient.get()
-                .uri("http://localhost:8082/api/inventory",
+        InventoryResponse[] responseArray = webClientBuilder.build().get()
+                .uri("http://inventory-service/api/inventory",
                         uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class) //here request is async
