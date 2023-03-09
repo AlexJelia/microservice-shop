@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   ## Postgres Docker Compose Config
   postgres-order:
@@ -16,7 +16,7 @@ services:
     ports:
       - "5431:5431"
     command: -p 5431
-    restart: unless-stopped
+    restart: always
 
   postgres-inventory:
     container_name: postgres-inventory
@@ -30,13 +30,13 @@ services:
       - ./dbData/postgres-inventory:/data/postgres
     ports:
       - "5432:5432"
-    restart: unless-stopped
+    restart: always
 
   ## Mongo Docker Compose Config
   mongo:
     container_name: mongo
     image: mongo:4.4.14-rc0-focal
-    restart: unless-stopped
+    restart: always
     ports:
       - "27017:27017"
     expose:
@@ -153,7 +153,7 @@ services:
     pull_policy: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5431/order-service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5431/order-service
     depends_on:
       - postgres-order
       - broker
@@ -168,7 +168,7 @@ services:
     pull_policy: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/inventory-service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-inventory:5432/inventory-service
     depends_on:
       - postgres-inventory
       - discovery-server
