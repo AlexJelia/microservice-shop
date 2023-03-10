@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Table(name = "t_inventory")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Inventory {
 
     @Id
