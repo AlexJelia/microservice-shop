@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
-    private final KafkaTemplate<String,OrderPlacedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public String placeOrder(OrderRequest orderRequest) {
         List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList().stream()
@@ -41,33 +42,40 @@ public class OrderService {
         List<String> skuCodes = order.getOrderLineItemsList().stream()
                 .map(OrderLineItems::getSkuCode)
                 .toList();
-        log.info("Calling inventory service");
 
         //Implement own span to trace this part of code
         //Spring Cloud Sleuth will assign this spanId to below code
         Span inventoryServiceLookup = tracer.nextSpan().name("InventoryServiceLookup");
 
-        try(Tracer.SpanInScope spanInScope = tracer.withSpan(inventoryServiceLookup.start())){
+        try (Tracer.SpanInScope spanInScope = tracer.withSpan(inventoryServiceLookup.start())) {
             //make request like
-            //http://localhost:8082/api/inventory?skuCode=item1&skuCode=item2
+            //http://localhost:8082/api/inventory/check?skuCode=item1&skuCode=item2
             //retrieve from response array of InventoryResponse objects
-            //which contain boolean isInStoc
+            //which contain boolean isInStock
+            log.info("Calling inventory service");
             InventoryResponse[] responseArray = webClientBuilder.build().get()
-                    .uri("http://inventory-service/api/inventory",
-                            uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
+                    .uri("http://inventory-service/api/inventory/check",
+                            uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
                     .block();
+            Objects.requireNonNull(responseArray);
+            if (responseArray.length == 0) {
+                throw new IllegalArgumentException("No one product is in Stock");
+            }
             boolean areProductsInStock = Arrays.stream(responseArray).allMatch(InventoryResponse::isInStock);
-            if(areProductsInStock) {
+
+            if (areProductsInStock) {
                 orderRepository.save(order);
-                //kafka will send OrderPlacedEvent object as a message to notificationTopic
                 kafkaTemplate.send("notificationTopic",new OrderPlacedEvent(order.getOrderNumber()));
                 return "Order Placed Successfully";
-            }else {
-                throw new IllegalArgumentException("Product is not in stock");
+            } else if (skuCodes.size() == responseArray.length) {
+                List<InventoryResponse> notInStock = Arrays.stream(responseArray).filter(item -> !item.isInStock()).toList();
+                throw new IllegalArgumentException(notInStock + "not in stock,please,try again later");
+            } else {
+                throw new IllegalArgumentException("Some of products do not exist,check your request");
             }
-        }finally {
+        } finally {
             inventoryServiceLookup.end();
         }
     }

@@ -12,4 +12,9 @@ import lombok.NoArgsConstructor;
 public class InventoryResponse {
     private String skuCode;
     private boolean isInStock;
+
+    @Override
+    public String toString() {
+        return skuCode ;
+    }
 }

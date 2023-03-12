@@ -23,11 +23,16 @@ public class OrderController {
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     @TimeLimiter(name = "inventory")
     @Retry(name = "inventory")
-    public CompletableFuture<String> placeOrder(@RequestBody com.app.orderservice.dto.OrderRequest orderRequest) {
+    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
         return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest));
     }
 
-    public CompletableFuture<String> fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException) {
-        return CompletableFuture.supplyAsync(() -> "Something went wrong!");
+    public CompletableFuture<String> fallbackMethod(RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> runtimeException.getMessage());
     }
+
+    public CompletableFuture<String> fallbackMethod(IllegalArgumentException exception) {
+        return CompletableFuture.supplyAsync(() -> exception.getMessage());
+    }
+
 }
