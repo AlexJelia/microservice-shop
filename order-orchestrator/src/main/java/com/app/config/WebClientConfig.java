@@ -12,7 +12,7 @@ public class WebClientConfig {
     @Qualifier("payment")
     public WebClient paymentClient(){
         return WebClient.builder()
-                .baseUrl("http://payment-service/api/inventory")
+                .baseUrl("http://localhost:8083/api/inventory")
                 .build();
     }
 
@@ -20,7 +20,7 @@ public class WebClientConfig {
     @Qualifier("inventory")
     public WebClient inventoryClient(){
         return WebClient.builder()
-                .baseUrl("http://inventory-service/api/inventory")
+                .baseUrl("http://localhost:8082/api/inventory")
                 .build();
     }
 

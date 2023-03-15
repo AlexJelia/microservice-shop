@@ -2,28 +2,29 @@ package com.app.orderservice.controller;
 
 import com.app.dto.OrderRequest;
 import com.app.dto.OrderResponse;
-import com.app.orderservice.model.Order;
 import com.app.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/order")
 @RequiredArgsConstructor
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
 
     @PostMapping("/create")
-    public Mono<Order> createOrder(@RequestBody Mono<OrderRequest> mono){
-        return mono
-                .flatMap(this.orderService::createOrder);
+    public String createOrder(@RequestBody OrderRequest orderRequest){
+        log.info("creating order");
+        return orderService.createOrder(orderRequest);
     }
 
     @GetMapping("/all")
-    public Flux<OrderResponse> getOrders(){
-        return this.orderService.getAll();
+    public List<OrderResponse> getOrders(){
+        return orderService.getAll();
     }
 }

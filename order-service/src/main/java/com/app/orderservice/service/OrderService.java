@@ -10,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,22 +23,25 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private Sinks.Many<OrchestratorRequestDto> orderSinks;
 
-    private final Sinks.Many<OrchestratorRequestDto> sink;
+
+    public void publishOrderEvent(OrderRequest orderRequest){
+        OrchestratorRequestDto orderEvent= getOrchestratorRequest(orderRequest);
+        orderSinks.tryEmitNext(orderEvent);
+    }
+
 
     @Transactional
-    public Mono<Order> createOrder(OrderRequest orderRequest){
-        return orderRepository.save(this.dtoToEntity(orderRequest))
-                .doOnNext(e -> orderRequest.setOrderId(e.getId()))
-                .doOnNext(e -> this.emitEvent(orderRequest));
+    public String createOrder(OrderRequest orderRequest){
+         orderRepository.save(dtoToEntity(orderRequest));
+         publishOrderEvent(orderRequest);
+         return "Order Created";
     }
-    public Flux<OrderResponse> getAll() {
-        return this.orderRepository.findAll()
-                .map(this::entityToDto);
-    }
-
-    private void emitEvent(OrderRequest orderRequest){
-        this.sink.tryEmitNext(this.getOrchestratorRequest(orderRequest));
+    public List<OrderResponse> getAll() {
+        return orderRepository.findAll().stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
     }
 
     private Order dtoToEntity(final OrderRequest dto){

@@ -1,23 +1,17 @@
 ---
 version: '3.7'
 services:
-  ## Posgtres Docker Compose Config
-  postgres-order:
-    container_name: postgres-order
-    image: postgres
-    environment:
-      POSTGRES_DB: order-service
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
-    volumes:
-      - ./postgres-order:/data/postgres
-    expose:
-      - "5431"
-    ports:
-      - "5431:5431"
-    command: -p 5431
+  ##  Docker Compose Config
+  mongo-order:
+    container_name: mongo-order
+    image: mongo:4.4.14-rc0-focal
     restart: always
+    ports:
+      - "27018:27018"
+    expose:
+      - "27018"
+    volumes:
+      - ./mongo-data:/data/db
 
   postgres-inventory:
     container_name: postgres-inventory
@@ -151,9 +145,8 @@ services:
     image: alexjelia/order-service:latest
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5431/order-service
     depends_on:
-      - postgres-order
+      - mongo-order
       - broker
       - zipkin
       - discovery-server
