@@ -1,9 +1,14 @@
 package com.app.orderservice.model;
 
+
+import com.app.enums.OrderStatus;
 import lombok.*;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "t_orders")
@@ -13,10 +18,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Order {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String orderNumber;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<OrderLineItems> orderLineItemsList;
+    private UUID id;
+    private Integer userId;
+    private String skuCode;
+    private Integer quantity;
+    private BigDecimal price;
+    private OrderStatus orderStatus;
 }

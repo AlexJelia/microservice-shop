@@ -1,6 +1,8 @@
 package com.app.inventoryservice.controller;
 
-import com.app.inventoryservice.dto.InventoryResponse;
+import com.app.dto.InventoryRequest;
+import com.app.dto.InventoryResponse;
+import com.app.inventoryservice.model.Inventory;
 import com.app.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,24 +11,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inventory")
 @RequiredArgsConstructor
+@RequestMapping("/api/inventory")
 public class InventoryController {
 
-    private final InventoryService inventoryService;
+    private final InventoryService service;
 
-    //request like
-    //http://localhost:8082/api/inventory/check?skuCode=item1&skuCode=item2
-    @GetMapping("/check")
+    @PostMapping("/deduct")
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode) {
-        return inventoryService.isInStock(skuCode);
+    public InventoryResponse deduct(@RequestBody final InventoryRequest requestDTO){
+        return this.service.deductInventory(requestDTO);
     }
 
-    @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> getAllFromStock() {
-        return inventoryService.getAll();
+    @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void add(@RequestBody Inventory inventory){
+        this.service.addInventory(inventory);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Inventory> getAll() {
+        return service.getAll();
+    }
+
+    @GetMapping("/revert")
+    @ResponseStatus(HttpStatus.OK)
+    public void revert(@RequestBody InventoryRequest inventoryRequest) {
+        service.revert(inventoryRequest);
+    }
+
 }
-

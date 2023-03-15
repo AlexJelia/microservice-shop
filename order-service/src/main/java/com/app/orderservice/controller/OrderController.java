@@ -1,15 +1,13 @@
 package com.app.orderservice.controller;
 
-import com.app.orderservice.dto.OrderRequest;
+import com.app.dto.OrderRequest;
+import com.app.dto.OrderResponse;
+import com.app.orderservice.model.Order;
 import com.app.orderservice.service.OrderService;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.CompletableFuture;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/order")
@@ -18,21 +16,14 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    @TimeLimiter(name = "inventory")
-    @Retry(name = "inventory")
-    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
-        return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest));
+    @PostMapping("/create")
+    public Mono<Order> createOrder(@RequestBody Mono<OrderRequest> mono){
+        return mono
+                .flatMap(this.orderService::createOrder);
     }
 
-    public CompletableFuture<String> fallbackMethod(RuntimeException runtimeException) {
-        return CompletableFuture.supplyAsync(() -> runtimeException.getMessage());
+    @GetMapping("/all")
+    public Flux<OrderResponse> getOrders(){
+        return this.orderService.getAll();
     }
-
-    public CompletableFuture<String> fallbackMethod(IllegalArgumentException exception) {
-        return CompletableFuture.supplyAsync(() -> exception.getMessage());
-    }
-
 }

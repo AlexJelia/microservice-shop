@@ -1,0 +1,14 @@
+server:
+  port: 8085
+---
+spring.cloud.stream:
+  function:
+    definition: processor
+  bindings:
+    processor-in-0:
+      destination: order-created
+    processor-out-0:
+      destination: order-updated
+  kafka:
+    binder:
+      replication-factor: 1

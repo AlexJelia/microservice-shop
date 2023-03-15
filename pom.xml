@@ -22,6 +22,9 @@
         <module>discovery-server</module>
         <module>api-gateway</module>
         <module>notification-service</module>
+        <module>common-dto</module>
+        <module>order-orchestrator</module>
+        <module>payment-service</module>
     </modules>
 
     <properties>

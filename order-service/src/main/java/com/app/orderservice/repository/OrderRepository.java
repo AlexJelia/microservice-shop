@@ -1,7 +1,9 @@
 package com.app.orderservice.repository;
 
 import com.app.orderservice.model.Order;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
-public interface OrderRepository extends JpaRepository<Order,Long> {
+import java.util.UUID;
+
+public interface OrderRepository extends ReactiveCrudRepository<Order, UUID> {
 }
