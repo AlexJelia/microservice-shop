@@ -4,7 +4,7 @@ spring.cloud.stream:
   function:
     definition: orderSupplier;consumer
   bindings:
-    supplier-out-0:
+    orderSupplier-out-0:
       destination: order-created
     consumer-in-0:
       destination: order-updated

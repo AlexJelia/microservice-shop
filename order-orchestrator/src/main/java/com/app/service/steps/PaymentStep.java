@@ -5,10 +5,11 @@ import com.app.dto.PaymentResponseDto;
 import com.app.enums.PaymentStatus;
 import com.app.service.WorkFlowStep;
 import com.app.service.WorkFlowStepStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
+@Slf4j
 public class PaymentStep implements WorkFlowStep {
 
     private final WebClient webClient;
@@ -27,6 +28,7 @@ public class PaymentStep implements WorkFlowStep {
 
     @Override
     public Mono<Boolean> process() {
+        log.info("CALL PAYMENT");
         return this.webClient
                 .post()
                 .uri("/api/payment/debit")
@@ -39,6 +41,7 @@ public class PaymentStep implements WorkFlowStep {
 
     @Override
     public Mono<Boolean> revert() {
+        log.info("REVERT FROM PAYMENT");
         return this.webClient
                 .post()
                 .uri("/api/payment/credit")

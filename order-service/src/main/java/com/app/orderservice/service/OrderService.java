@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private Sinks.Many<OrchestratorRequestDto> orderSinks;
+    private final Sinks.Many<OrchestratorRequestDto> orderSinks;
 
 
     public void publishOrderEvent(OrderRequest orderRequest){
@@ -71,6 +71,7 @@ public class OrderService {
                 .amount(orderRequestDTO.getPrice())
                 .orderId(orderRequestDTO.getOrderId())
                 .skuCode(orderRequestDTO.getSkuCode())
+                .quantity(orderRequestDTO.getQuantity())
                 .build();
     }
 
