@@ -28,8 +28,8 @@ public class InventoryController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void add(@RequestBody Inventory inventory){
-        this.service.addInventory(inventory);
+    public void add(@RequestBody InventoryRequest inventoryRequest){
+        this.service.addInventory(inventoryRequest);
     }
 
     @GetMapping
@@ -38,7 +38,7 @@ public class InventoryController {
         return service.getAll();
     }
 
-    @GetMapping("/revert")
+    @PostMapping("/revert")
     @ResponseStatus(HttpStatus.OK)
     public void revert(@RequestBody InventoryRequest inventoryRequest) {
         log.info("CALL REVERT CONTROLLER");

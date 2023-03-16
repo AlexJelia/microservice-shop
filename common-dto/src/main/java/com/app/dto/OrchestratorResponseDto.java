@@ -6,12 +6,13 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+
 @Data
 @Builder
 public class OrchestratorResponseDto {
+    private UUID orderId;
     private Integer userId;
     private String skuCode;
-    private UUID orderId;
     private BigDecimal amount;
     private OrderStatus status;
 }

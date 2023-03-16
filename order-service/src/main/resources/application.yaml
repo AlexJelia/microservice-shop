@@ -2,11 +2,11 @@ server:
   port: 8081
 spring.cloud.stream:
   function:
-    definition: orderSupplier;consumer
+    definition: orderSupplier;eventConsumer
   bindings:
     orderSupplier-out-0:
       destination: order-created
-    consumer-in-0:
+    eventConsumer-in-0:
       destination: order-updated
 ---
 spring:

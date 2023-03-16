@@ -76,7 +76,6 @@ public class OrchestratorService {
 
     private InventoryRequest getInventoryRequestDTO(OrchestratorRequestDto requestDTO){
         return InventoryRequest.builder()
-                .orderId(requestDTO.getOrderId())
                 .skuCode(requestDTO.getSkuCode())
                 .quantity(requestDTO.getQuantity())
                 .build();

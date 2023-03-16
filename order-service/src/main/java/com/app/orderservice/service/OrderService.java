@@ -34,6 +34,7 @@ public class OrderService {
 
     @Transactional
     public String createOrder(OrderRequest orderRequest){
+         orderRequest.setOrderId(UUID.randomUUID());
          orderRepository.save(dtoToEntity(orderRequest));
          publishOrderEvent(orderRequest);
          return "Order Created";
@@ -46,7 +47,7 @@ public class OrderService {
 
     private Order dtoToEntity(final OrderRequest dto){
         return Order.builder()
-                .id(UUID.randomUUID())
+                .id(dto.getOrderId())
                 .userId(dto.getUserId())
                 .skuCode(dto.getSkuCode())
                 .quantity(dto.getQuantity())

@@ -17,7 +17,7 @@ public class OrchestratorConfig {
     private OrchestratorService orchestratorService;
     @Bean
     public Function<Flux<OrchestratorRequestDto>, Flux<OrchestratorResponseDto>> processor() {
-        return orderEventFlux -> orderEventFlux.flatMap(this::processEvent);
+        return orchestratorRequestFlux -> orchestratorRequestFlux.flatMap(this::processEvent);
     }
 
     private Mono<OrchestratorResponseDto> processEvent(OrchestratorRequestDto dto) {

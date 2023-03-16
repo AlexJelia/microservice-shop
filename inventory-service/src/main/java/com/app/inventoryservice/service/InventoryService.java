@@ -19,15 +19,14 @@ public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public InventoryResponse deductInventory(final InventoryRequest requestDTO) {
         log.info("Checking Inventory");
         InventoryResponse response = InventoryResponse.builder()
-                .orderId(requestDTO.getOrderId())
                 .skuCode(requestDTO.getSkuCode())
                 .build();
         Inventory item = inventoryRepository.findBySkuCode(requestDTO.getSkuCode()).orElse(null);
-        if(item==null || item.getQuantity()>requestDTO.getQuantity()){
+        if(item==null || item.getQuantity()<requestDTO.getQuantity()){
             response.setStatus(InventoryStatus.UNAVAILABLE);
         }else{
             item.setQuantity(item.getQuantity()-requestDTO.getQuantity());
@@ -38,10 +37,9 @@ public class InventoryService {
     }
 
     @Transactional
-    public void addInventory(Inventory inventory) {
-        inventoryRepository.save(inventory);
+    public void addInventory(InventoryRequest inventoryRequest) {
+        inventoryRepository.save(toEntity(inventoryRequest));
     }
-
     @Transactional(readOnly = true)
     public List<Inventory> getAll() {
         return inventoryRepository.findAll();
@@ -50,7 +48,14 @@ public class InventoryService {
     @Transactional
     public void revert(InventoryRequest inventoryRequest) {
        Inventory item = inventoryRepository.findBySkuCode(inventoryRequest.getSkuCode()).orElseThrow(IllegalArgumentException::new);
-       item.setQuantity(inventoryRequest.getQuantity());
+       item.setQuantity(item.getQuantity()+inventoryRequest.getQuantity());
        inventoryRepository.save(item);
+    }
+
+    private Inventory toEntity(InventoryRequest inventoryRequest) {
+        return Inventory.builder()
+                .skuCode(inventoryRequest.getSkuCode())
+                .quantity(inventoryRequest.getQuantity())
+                .build();
     }
 }

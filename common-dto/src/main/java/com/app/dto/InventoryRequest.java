@@ -1,14 +1,15 @@
 package com.app.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class InventoryRequest {
     private String skuCode;
     private Integer quantity;
-    private UUID orderId;
 }

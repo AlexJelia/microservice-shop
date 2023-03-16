@@ -1,15 +1,16 @@
 package com.app.dto;
 
 import com.app.enums.InventoryStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class InventoryResponse {
-    private UUID orderId;
     private String skuCode;
     private InventoryStatus status;
 }
