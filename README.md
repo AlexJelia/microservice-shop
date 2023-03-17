@@ -1,6 +1,6 @@
 # Simple Shop Application (WIP)
 
-![для сашки](https://user-images.githubusercontent.com/112489897/224400201-0cafc89d-9327-40dc-ba05-9569c6a17e00.jpg)
+![для сашки](https://user-images.githubusercontent.com/112489897/226066859-a818c9da-01ae-4772-afb9-466b273e2eea.png)
 
 
 Application designed through microservice architecture <br>
@@ -18,6 +18,7 @@ Place an order(receive an order confirmation message if item is in stock)  <br>
 # Api Documentation
 ...........
 # How to run
+
 
 # Technology stack
 Java 17 <br>
