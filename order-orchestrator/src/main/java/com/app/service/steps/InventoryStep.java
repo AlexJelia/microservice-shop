@@ -5,11 +5,9 @@ import com.app.dto.InventoryResponse;
 import com.app.enums.InventoryStatus;
 import com.app.service.WorkFlowStep;
 import com.app.service.WorkFlowStepStatus;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-@Slf4j
 public class InventoryStep implements WorkFlowStep {
 
     private final WebClient webClient;
@@ -28,7 +26,6 @@ public class InventoryStep implements WorkFlowStep {
 
     @Override
     public Mono<Boolean> process() {
-        log.info("CALL INVENTORY");
         return this.webClient
                 .post()
                 .uri("/api/inventory/deduct")
@@ -41,7 +38,6 @@ public class InventoryStep implements WorkFlowStep {
 
     @Override
     public Mono<Boolean> revert() {
-        log.info("REVERT FROM INVENTORY");
         return this.webClient
                 .post()
                 .uri("/api/inventory/revert")

@@ -25,19 +25,17 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final Sinks.Many<OrchestratorRequestDto> orderSinks;
 
-
     public void publishOrderEvent(OrderRequest orderRequest){
         OrchestratorRequestDto orderEvent= getOrchestratorRequest(orderRequest);
         orderSinks.tryEmitNext(orderEvent);
     }
-
 
     @Transactional
     public String createOrder(OrderRequest orderRequest){
          orderRequest.setOrderId(UUID.randomUUID());
          orderRepository.save(dtoToEntity(orderRequest));
          publishOrderEvent(orderRequest);
-         return "Order Created";
+         return "Order Placed,check status via get request";
     }
     public List<OrderResponse> getAll() {
         return orderRepository.findAll().stream()
@@ -52,7 +50,7 @@ public class OrderService {
                 .skuCode(dto.getSkuCode())
                 .quantity(dto.getQuantity())
                 .price(dto.getPrice())
-                .orderStatus(OrderStatus.ORDER_CREATED)
+                .orderStatus(OrderStatus.ORDER_PROCESSING)
                 .build();
     }
 

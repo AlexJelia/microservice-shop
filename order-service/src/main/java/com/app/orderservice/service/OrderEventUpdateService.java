@@ -4,17 +4,17 @@ import com.app.dto.OrchestratorResponseDto;
 import com.app.enums.OrderStatus;
 import com.app.orderservice.model.Order;
 import com.app.orderservice.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class OrderEventUpdateService {
 
-    @Autowired
-    private OrderRepository repository;
+    private final OrderRepository repository;
 
     @Transactional
     public void updateOrder(final OrchestratorResponseDto responseDTO){

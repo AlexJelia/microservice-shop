@@ -11,14 +11,11 @@ import java.util.function.Consumer;
 @Configuration
 @RequiredArgsConstructor
 public class OrderEventHandler {
-
     private final OrderEventUpdateService service;
-
     @Bean
     public Consumer<OrchestratorResponseDto> eventConsumer(){
         //listen order-updated-topic
         //will update order
         return (orchestratorResponse)-> service.updateOrder(orchestratorResponse);
     }
-
 }

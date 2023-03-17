@@ -9,9 +9,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 @EnableEurekaClient
 @Slf4j
 public class OrderServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(OrderServiceApplication.class, args);
     }
-
 }
