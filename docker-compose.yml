@@ -2,16 +2,22 @@
 version: '3.7'
 services:
   ##  Docker Compose Config
-  mongo-order:
-    container_name: mongo-order
-    image: mongo:4.4.14-rc0-focal
-    restart: always
-    ports:
-      - "27018:27018"
-    expose:
-      - "27018"
+  postgres-order:
+    container_name: postgres-order
+    image: postgres
+    environment:
+      POSTGRES_DB: order-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
     volumes:
-      - ./mongo-data:/data/db
+      - ./postgres-order:/data/postgres
+    expose:
+      - "5431"
+    ports:
+      - "5431:5431"
+    command: -p 5431
+    restart: always
 
   postgres-inventory:
     container_name: postgres-inventory
@@ -113,6 +119,14 @@ services:
     depends_on:
       - zipkin
 
+    ## MAILHOG Server
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
   api-gateway:
     image: alexjelia/api-gateway:latest
     container_name: api-gateway
@@ -139,14 +153,41 @@ services:
       - discovery-server
       - api-gateway
 
+  ## Orchestrator Docker Compose Config
+  orchestrator:
+    container_name: orchestrator
+    image: alexjelia/order-orchestrator:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+      - broker
+      - discovery-server
+      - api-gateway
+
+  ## Payment-Service Docker Compose Config
+  payment-service:
+    container_name: payment-service
+    image: alexjelia/payment-service:latest
+    ports:
+      - "8083:8083"
+    expose:
+      - "8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - discovery-server
+      - api-gateway
+
   ## Order-Service Docker Compose Config
   order-service:
     container_name: order-service
     image: alexjelia/order-service:latest
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5431/order-service
     depends_on:
-      - mongo-order
+      - postgres-order
       - broker
       - zipkin
       - discovery-server
@@ -156,6 +197,10 @@ services:
   inventory-service:
     container_name: inventory-service
     image: alexjelia/inventory-service:latest
+    ports:
+      - "8082:8082"
+    expose:
+      - "8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-inventory:5432/inventory-service

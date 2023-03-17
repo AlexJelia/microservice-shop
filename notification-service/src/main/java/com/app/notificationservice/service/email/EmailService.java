@@ -17,7 +17,7 @@ public class EmailService {
     @Value("${spring.mail.addresses.from}")
     private String emailFrom;
 
-    @Value("${spring.mail.addresses.to}")
+    @Value("${spring.mail.addresses.replyTo}")
     private String replyTo;
 
     @Autowired

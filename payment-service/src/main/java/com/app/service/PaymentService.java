@@ -3,6 +3,7 @@ package com.app.service;
 import com.app.dto.PaymentRequest;
 import com.app.dto.PaymentResponse;
 import com.app.enums.PaymentStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import java.util.Map;
 //TODO inDB
 
 @Service
+@Slf4j
 public class PaymentService {
 
     private Map<Integer, BigDecimal> userBalanceMap;
@@ -37,11 +39,13 @@ public class PaymentService {
         if(balance.compareTo(requestDTO.getAmount()) >=0) {
             response.setStatus(PaymentStatus.PAYMENT_APPROVED);
             this.userBalanceMap.put(requestDTO.getUserId(), balance.subtract(response.getAmount()));
+            log.info("Payment Approved");
         }
         return response;
     }
 
     public void credit(final PaymentRequest requestDTO){
+        log.info("Payment Rejected");
         this.userBalanceMap.computeIfPresent(requestDTO.getUserId(), (k, v) ->requestDTO.getAmount().add(v));
     }
 

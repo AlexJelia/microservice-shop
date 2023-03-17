@@ -22,7 +22,7 @@ public class NotificationService {
         System.out.println("RECEIVED MESSAGE FROM KAFKA");
         try {
             emailService.sendEmail(
-                    "email adres",
+                    "user@mail.com",
                     "Order status",
                     templateService.generate(payload)
             );

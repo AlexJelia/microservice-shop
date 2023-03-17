@@ -23,5 +23,4 @@ public class WebClientConfig {
                 .baseUrl("http://localhost:8082")
                 .build();
     }
-
 }

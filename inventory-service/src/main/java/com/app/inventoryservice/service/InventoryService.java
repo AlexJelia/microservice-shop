@@ -21,17 +21,18 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponse deductInventory(final InventoryRequest requestDTO) {
-        log.info("Checking Inventory");
         InventoryResponse response = InventoryResponse.builder()
                 .skuCode(requestDTO.getSkuCode())
                 .build();
         Inventory item = inventoryRepository.findBySkuCode(requestDTO.getSkuCode()).orElse(null);
         if(item==null || item.getQuantity()<requestDTO.getQuantity()){
             response.setStatus(InventoryStatus.UNAVAILABLE);
+            log.info("Item Unavailable");
         }else{
             item.setQuantity(item.getQuantity()-requestDTO.getQuantity());
             inventoryRepository.save(item);
             response.setStatus(InventoryStatus.AVAILABLE);
+            log.info("Item Available");
         }
         return response;
     }
@@ -47,6 +48,7 @@ public class InventoryService {
 
     @Transactional
     public void revert(InventoryRequest inventoryRequest) {
+        log.info("Revert Items");
        Inventory item = inventoryRepository.findBySkuCode(inventoryRequest.getSkuCode()).orElseThrow(IllegalArgumentException::new);
        item.setQuantity(item.getQuantity()+inventoryRequest.getQuantity());
        inventoryRepository.save(item);
