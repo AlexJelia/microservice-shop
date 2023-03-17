@@ -1,6 +1,7 @@
 package com.app.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -9,18 +10,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Bean
+    @LoadBalanced
     @Qualifier("payment")
-    public WebClient paymentClient(){
-        return WebClient.builder()
-                .baseUrl("http://localhost:8083")
-                .build();
+    public WebClient.Builder paymentClient(){
+        return WebClient.builder();
     }
 
     @Bean
+    @LoadBalanced
     @Qualifier("inventory")
-    public WebClient inventoryClient(){
-        return WebClient.builder()
-                .baseUrl("http://localhost:8082")
-                .build();
+    public WebClient.Builder inventoryClient(){
+        return WebClient.builder();
     }
 }

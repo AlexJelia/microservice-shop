@@ -13,11 +13,11 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class PaymentStep implements WorkFlowStep {
 
-    private final WebClient webClient;
+    private final WebClient.Builder webClient;
     private final PaymentRequest requestDTO;
     private WorkFlowStepStatus stepStatus = WorkFlowStepStatus.PENDING;
 
-    public PaymentStep(WebClient webClient, PaymentRequest requestDTO) {
+    public PaymentStep(WebClient.Builder webClient, PaymentRequest requestDTO) {
         this.webClient = webClient;
         this.requestDTO = requestDTO;
     }
@@ -30,9 +30,9 @@ public class PaymentStep implements WorkFlowStep {
     @Override
     public Mono<Boolean> process() {
         log.info("CALL DEBIT PAYMENT");
-        return this.webClient
+        return this.webClient.build()
                 .post()
-                .uri("/api/payment/debit")
+                .uri("http://payment-service/api/payment/debit")
                 .body(BodyInserters.fromValue(this.requestDTO))
                 .retrieve()
                 .bodyToMono(PaymentResponse.class)
@@ -43,14 +43,13 @@ public class PaymentStep implements WorkFlowStep {
     @Override
     public Mono<Boolean> revert() {
         log.info("CALL REVERT PAYMENT");
-        return this.webClient
+        return this.webClient.build()
                 .post()
-                .uri("/api/payment/credit")
+                .uri("http://payment-service/api/payment/credit")
                 .body(BodyInserters.fromValue(this.requestDTO))
                 .retrieve()
                 .bodyToMono(Void.class)
                 .map(r -> true)
                 .onErrorReturn(false);
     }
-
 }

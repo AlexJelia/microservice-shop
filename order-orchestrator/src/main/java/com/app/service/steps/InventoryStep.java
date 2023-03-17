@@ -12,11 +12,11 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class InventoryStep implements WorkFlowStep {
 
-    private final WebClient webClient;
+    private final WebClient.Builder webClient;
     private final InventoryRequest requestDTO;
     private WorkFlowStepStatus stepStatus = WorkFlowStepStatus.PENDING;
 
-    public InventoryStep(WebClient webClient, InventoryRequest requestDTO) {
+    public InventoryStep(WebClient.Builder webClient, InventoryRequest requestDTO) {
         this.webClient = webClient;
         this.requestDTO = requestDTO;
     }
@@ -29,9 +29,9 @@ public class InventoryStep implements WorkFlowStep {
     @Override
     public Mono<Boolean> process() {
         log.info("CALL DEDUCT FROM INVENTORY");
-        return this.webClient
+        return this.webClient.build()
                 .post()
-                .uri("/api/inventory/deduct")
+                .uri("http://inventory-service/api/inventory/deduct")
                 .body(BodyInserters.fromValue(this.requestDTO))
                 .retrieve()
                 .bodyToMono(InventoryResponse.class)
@@ -42,14 +42,13 @@ public class InventoryStep implements WorkFlowStep {
     @Override
     public Mono<Boolean> revert() {
         log.info("CALL REVERT INVENTORY");
-        return this.webClient
+        return this.webClient.build()
                 .post()
-                .uri("/api/inventory/revert")
+                .uri("http://inventory-service/api/inventory/revert")
                 .body(BodyInserters.fromValue(this.requestDTO))
                 .retrieve()
                 .bodyToMono(Void.class)
                 .map(r ->true)
                 .onErrorReturn(false);
     }
-
 }

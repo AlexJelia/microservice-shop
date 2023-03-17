@@ -20,11 +20,11 @@ import java.util.List;
 public class OrchestratorService {
     @Autowired
     @Qualifier("payment")
-    private WebClient paymentClient;
+    private WebClient.Builder paymentClient;
 
     @Autowired
     @Qualifier("inventory")
-    private WebClient inventoryClient;
+    private WebClient.Builder inventoryClient;
 
     public Mono<OrchestratorResponse> orderProduct(final OrchestratorRequest requestDTO){
         WorkFlow orderWorkflow = this.getOrderWorkflow(requestDTO);
