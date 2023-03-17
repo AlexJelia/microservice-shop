@@ -1,6 +1,6 @@
 package com.app.orderservice.config;
 
-import com.app.dto.OrchestratorRequestDto;
+import com.app.dto.OrchestratorRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Flux;
@@ -12,12 +12,12 @@ import java.util.function.Supplier;
 public class OrderPublisherConfig {
 
     @Bean
-    public Sinks.Many<OrchestratorRequestDto> orderSinks(){
+    public Sinks.Many<OrchestratorRequest> orderSinks(){
         return Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @Bean
-    public Supplier<Flux<OrchestratorRequestDto>> orderSupplier(Sinks.Many<OrchestratorRequestDto> sinks){
+    public Supplier<Flux<OrchestratorRequest>> orderSupplier(Sinks.Many<OrchestratorRequest> sinks){
        return sinks::asFlux;
     }
 }

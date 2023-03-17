@@ -1,0 +1,7 @@
+
+spring.cloud.stream:
+  function:
+    definition: eventConsumer
+  bindings:
+    eventConsumer-in-0:
+      destination: order-updated

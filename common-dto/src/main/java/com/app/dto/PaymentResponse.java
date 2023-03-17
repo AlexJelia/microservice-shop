@@ -1,5 +1,6 @@
 package com.app.dto;
 
+import com.app.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentRequestDto {
+public class PaymentResponse {
     private Integer userId;
     private UUID orderId;
     private BigDecimal amount;
+    private PaymentStatus status;
 }

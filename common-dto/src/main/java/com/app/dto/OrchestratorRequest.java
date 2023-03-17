@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class OrchestratorRequestDto {
+public class OrchestratorRequest {
     private Integer userId;
     private String skuCode;
     private Integer quantity;

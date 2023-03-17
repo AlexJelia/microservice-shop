@@ -1,9 +1,9 @@
 package com.app.service;
 
 import com.app.dto.InventoryRequest;
-import com.app.dto.OrchestratorRequestDto;
-import com.app.dto.OrchestratorResponseDto;
-import com.app.dto.PaymentRequestDto;
+import com.app.dto.OrchestratorRequest;
+import com.app.dto.OrchestratorResponse;
+import com.app.dto.PaymentRequest;
 import com.app.enums.OrderStatus;
 import com.app.service.steps.InventoryStep;
 import com.app.service.steps.PaymentStep;
@@ -26,7 +26,7 @@ public class OrchestratorService {
     @Qualifier("inventory")
     private WebClient inventoryClient;
 
-    public Mono<OrchestratorResponseDto> orderProduct(final OrchestratorRequestDto requestDTO){
+    public Mono<OrchestratorResponse> orderProduct(final OrchestratorRequest requestDTO){
         WorkFlow orderWorkflow = this.getOrderWorkflow(requestDTO);
         return Flux.fromStream(() -> orderWorkflow.getSteps().stream())
                 .flatMap(WorkFlowStep::process)
@@ -40,7 +40,7 @@ public class OrchestratorService {
                 .onErrorResume(ex -> this.revertOrder(orderWorkflow, requestDTO));
     }
 
-    private Mono<OrchestratorResponseDto> revertOrder(final WorkFlow workflow, final OrchestratorRequestDto requestDTO){
+    private Mono<OrchestratorResponse> revertOrder(final WorkFlow workflow, final OrchestratorRequest requestDTO){
         return Flux.fromStream(() -> workflow.getSteps().stream())
                 .filter(wf -> wf.getStatus().equals(WorkFlowStepStatus.COMPLETE))
                 .flatMap(WorkFlowStep::revert)
@@ -48,14 +48,14 @@ public class OrchestratorService {
                 .then(Mono.just(this.getResponseDTO(requestDTO, OrderStatus.ORDER_CANCELLED)));
     }
 
-    private WorkFlow getOrderWorkflow(OrchestratorRequestDto requestDTO){
+    private WorkFlow getOrderWorkflow(OrchestratorRequest requestDTO){
         WorkFlowStep paymentStep = new PaymentStep(this.paymentClient, this.getPaymentRequestDTO(requestDTO));
         WorkFlowStep inventoryStep = new InventoryStep(this.inventoryClient, this.getInventoryRequestDTO(requestDTO));
         return new OrderWorkFlow(List.of(paymentStep, inventoryStep));
     }
 
-    private OrchestratorResponseDto getResponseDTO(OrchestratorRequestDto requestDTO, OrderStatus status){
-        return OrchestratorResponseDto.builder()
+    private OrchestratorResponse getResponseDTO(OrchestratorRequest requestDTO, OrderStatus status){
+        return OrchestratorResponse.builder()
                 .orderId(requestDTO.getOrderId())
                 .amount(requestDTO.getAmount())
                 .skuCode(requestDTO.getSkuCode())
@@ -64,15 +64,15 @@ public class OrchestratorService {
                 .build();
     }
 
-    private PaymentRequestDto getPaymentRequestDTO(OrchestratorRequestDto requestDTO){
-        return PaymentRequestDto.builder()
+    private PaymentRequest getPaymentRequestDTO(OrchestratorRequest requestDTO){
+        return PaymentRequest.builder()
                 .userId(requestDTO.getUserId())
                 .amount(requestDTO.getAmount())
                 .orderId(requestDTO.getOrderId())
                 .build();
     }
 
-    private InventoryRequest getInventoryRequestDTO(OrchestratorRequestDto requestDTO){
+    private InventoryRequest getInventoryRequestDTO(OrchestratorRequest requestDTO){
         return InventoryRequest.builder()
                 .skuCode(requestDTO.getSkuCode())
                 .quantity(requestDTO.getQuantity())

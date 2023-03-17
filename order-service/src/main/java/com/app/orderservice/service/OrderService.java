@@ -1,6 +1,6 @@
 package com.app.orderservice.service;
 
-import com.app.dto.OrchestratorRequestDto;
+import com.app.dto.OrchestratorRequest;
 import com.app.dto.OrderRequest;
 import com.app.dto.OrderResponse;
 import com.app.enums.OrderStatus;
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final Sinks.Many<OrchestratorRequestDto> orderSinks;
+    private final Sinks.Many<OrchestratorRequest> orderSinks;
 
     public void publishOrderEvent(OrderRequest orderRequest){
-        OrchestratorRequestDto orderEvent= getOrchestratorRequest(orderRequest);
+        OrchestratorRequest orderEvent= getOrchestratorRequest(orderRequest);
         orderSinks.tryEmitNext(orderEvent);
     }
 
@@ -64,8 +64,8 @@ public class OrderService {
                 .build();
     }
 
-    public OrchestratorRequestDto getOrchestratorRequest(OrderRequest orderRequestDTO){
-        return OrchestratorRequestDto.builder()
+    public OrchestratorRequest getOrchestratorRequest(OrderRequest orderRequestDTO){
+        return OrchestratorRequest.builder()
                 .userId(orderRequestDTO.getUserId())
                 .amount(orderRequestDTO.getPrice())
                 .orderId(orderRequestDTO.getOrderId())
@@ -73,5 +73,4 @@ public class OrderService {
                 .quantity(orderRequestDTO.getQuantity())
                 .build();
     }
-
 }

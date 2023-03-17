@@ -1,7 +1,7 @@
 package com.app.service;
 
-import com.app.dto.PaymentRequestDto;
-import com.app.dto.PaymentResponseDto;
+import com.app.dto.PaymentRequest;
+import com.app.dto.PaymentResponse;
 import com.app.enums.PaymentStatus;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +26,9 @@ public class PaymentService {
         this.userBalanceMap.put(3, BigDecimal.valueOf(6000));
     }
 
-    public PaymentResponseDto debit(final PaymentRequestDto requestDTO){
+    public PaymentResponse debit(final PaymentRequest requestDTO){
         BigDecimal balance = this.userBalanceMap.getOrDefault(requestDTO.getUserId(), BigDecimal.valueOf(0));
-        PaymentResponseDto response = PaymentResponseDto.builder()
+        PaymentResponse response = PaymentResponse.builder()
                 .amount(requestDTO.getAmount())
                 .userId(requestDTO.getUserId())
                 .orderId(requestDTO.getOrderId())
@@ -41,7 +41,7 @@ public class PaymentService {
         return response;
     }
 
-    public void credit(final PaymentRequestDto requestDTO){
+    public void credit(final PaymentRequest requestDTO){
         this.userBalanceMap.computeIfPresent(requestDTO.getUserId(), (k, v) ->requestDTO.getAmount().add(v));
     }
 

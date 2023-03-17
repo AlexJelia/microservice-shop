@@ -1,7 +1,7 @@
 package com.app.config;
 
-import com.app.dto.OrchestratorRequestDto;
-import com.app.dto.OrchestratorResponseDto;
+import com.app.dto.OrchestratorRequest;
+import com.app.dto.OrchestratorResponse;
 import com.app.service.OrchestratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,11 +17,11 @@ public class OrchestratorConfig {
 
     private final OrchestratorService orchestratorService;
     @Bean
-    public Function<Flux<OrchestratorRequestDto>, Flux<OrchestratorResponseDto>> processor() {
+    public Function<Flux<OrchestratorRequest>, Flux<OrchestratorResponse>> processor() {
         return orchestratorRequestFlux -> orchestratorRequestFlux.flatMap(this::processEvent);
     }
 
-    private Mono<OrchestratorResponseDto> processEvent(OrchestratorRequestDto dto) {
+    private Mono<OrchestratorResponse> processEvent(OrchestratorRequest dto) {
         return orchestratorService.orderProduct(dto);
     }
 }

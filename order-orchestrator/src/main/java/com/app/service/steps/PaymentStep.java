@@ -1,7 +1,7 @@
 package com.app.service.steps;
 
-import com.app.dto.PaymentRequestDto;
-import com.app.dto.PaymentResponseDto;
+import com.app.dto.PaymentRequest;
+import com.app.dto.PaymentResponse;
 import com.app.enums.PaymentStatus;
 import com.app.service.WorkFlowStep;
 import com.app.service.WorkFlowStepStatus;
@@ -12,10 +12,10 @@ import reactor.core.publisher.Mono;
 public class PaymentStep implements WorkFlowStep {
 
     private final WebClient webClient;
-    private final PaymentRequestDto requestDTO;
+    private final PaymentRequest requestDTO;
     private WorkFlowStepStatus stepStatus = WorkFlowStepStatus.PENDING;
 
-    public PaymentStep(WebClient webClient, PaymentRequestDto requestDTO) {
+    public PaymentStep(WebClient webClient, PaymentRequest requestDTO) {
         this.webClient = webClient;
         this.requestDTO = requestDTO;
     }
@@ -32,7 +32,7 @@ public class PaymentStep implements WorkFlowStep {
                 .uri("/api/payment/debit")
                 .body(BodyInserters.fromValue(this.requestDTO))
                 .retrieve()
-                .bodyToMono(PaymentResponseDto.class)
+                .bodyToMono(PaymentResponse.class)
                 .map(r -> r.getStatus().equals(PaymentStatus.PAYMENT_APPROVED))
                 .doOnNext(b -> this.stepStatus = b ? WorkFlowStepStatus.COMPLETE : WorkFlowStepStatus.FAILED);
     }
