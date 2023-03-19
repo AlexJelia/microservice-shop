@@ -16,13 +16,13 @@ public class OrderEventUpdateService {
     private final OrderRepository repository;
 
     @Transactional
-    public void updateOrder(final OrchestratorResponse responseDTO){
+    public void updateOrder(final OrchestratorResponse responseDTO) {
         Order order = repository.findById(responseDTO.getOrderId()).orElseThrow(IllegalArgumentException::new);
         order.setOrderStatus(responseDTO.getStatus());
-        if(order.getOrderStatus().equals(OrderStatus.ORDER_COMPLETED)){
+        if (order.getOrderStatus().equals(OrderStatus.ORDER_COMPLETED)) {
             repository.save(order);
             log.info("Order completed!!!");
-        }else{
+        } else {
             repository.save(order);
             log.info("Order canceled");
         }

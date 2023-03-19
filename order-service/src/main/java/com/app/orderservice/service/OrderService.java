@@ -25,25 +25,26 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final Sinks.Many<OrchestratorRequest> orderSinks;
 
-    public void publishOrderEvent(OrderRequest orderRequest){
-        OrchestratorRequest orderEvent= getOrchestratorRequest(orderRequest);
+    public void publishOrderEvent(OrderRequest orderRequest) {
+        OrchestratorRequest orderEvent = getOrchestratorRequest(orderRequest);
         orderSinks.tryEmitNext(orderEvent);
     }
 
     @Transactional
-    public String createOrder(OrderRequest orderRequest){
-         orderRequest.setOrderId(UUID.randomUUID());
-         orderRepository.save(dtoToEntity(orderRequest));
-         publishOrderEvent(orderRequest);
-         return "Order Placed,check status via get request";
+    public String createOrder(OrderRequest orderRequest) {
+        orderRequest.setOrderId(UUID.randomUUID());
+        orderRepository.save(dtoToEntity(orderRequest));
+        publishOrderEvent(orderRequest);
+        return "Order Placed,check your mail(localhost:8025)";
     }
+
     public List<OrderResponse> getAll() {
         return orderRepository.findAll().stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
     }
 
-    private Order dtoToEntity(final OrderRequest dto){
+    private Order dtoToEntity(final OrderRequest dto) {
         return Order.builder()
                 .id(dto.getOrderId())
                 .userId(dto.getUserId())
@@ -54,7 +55,7 @@ public class OrderService {
                 .build();
     }
 
-    private OrderResponse entityToDto(final Order purchaseOrder){
+    private OrderResponse entityToDto(final Order purchaseOrder) {
         return OrderResponse.builder()
                 .orderId(purchaseOrder.getId())
                 .userId(purchaseOrder.getUserId())
@@ -64,7 +65,7 @@ public class OrderService {
                 .build();
     }
 
-    public OrchestratorRequest getOrchestratorRequest(OrderRequest orderRequestDTO){
+    public OrchestratorRequest getOrchestratorRequest(OrderRequest orderRequestDTO) {
         return OrchestratorRequest.builder()
                 .userId(orderRequestDTO.getUserId())
                 .amount(orderRequestDTO.getPrice())

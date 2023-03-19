@@ -25,11 +25,11 @@ public class InventoryService {
                 .skuCode(requestDTO.getSkuCode())
                 .build();
         Inventory item = inventoryRepository.findBySkuCode(requestDTO.getSkuCode()).orElse(null);
-        if(item==null || item.getQuantity()<requestDTO.getQuantity()){
+        if (item == null || item.getQuantity() < requestDTO.getQuantity()) {
             response.setStatus(InventoryStatus.UNAVAILABLE);
             log.info("Item Unavailable");
-        }else{
-            item.setQuantity(item.getQuantity()-requestDTO.getQuantity());
+        } else {
+            item.setQuantity(item.getQuantity() - requestDTO.getQuantity());
             inventoryRepository.save(item);
             response.setStatus(InventoryStatus.AVAILABLE);
             log.info("Item Available");
@@ -41,6 +41,7 @@ public class InventoryService {
     public void addInventory(InventoryRequest inventoryRequest) {
         inventoryRepository.save(toEntity(inventoryRequest));
     }
+
     @Transactional(readOnly = true)
     public List<Inventory> getAll() {
         return inventoryRepository.findAll();
@@ -49,9 +50,9 @@ public class InventoryService {
     @Transactional
     public void revert(InventoryRequest inventoryRequest) {
         log.info("Revert Items");
-       Inventory item = inventoryRepository.findBySkuCode(inventoryRequest.getSkuCode()).orElseThrow(IllegalArgumentException::new);
-       item.setQuantity(item.getQuantity()+inventoryRequest.getQuantity());
-       inventoryRepository.save(item);
+        Inventory item = inventoryRepository.findBySkuCode(inventoryRequest.getSkuCode()).orElseThrow(IllegalArgumentException::new);
+        item.setQuantity(item.getQuantity() + inventoryRequest.getQuantity());
+        inventoryRepository.save(item);
     }
 
     private Inventory toEntity(InventoryRequest inventoryRequest) {

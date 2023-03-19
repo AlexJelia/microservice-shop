@@ -1,6 +1,6 @@
 package com.app.enums;
 
-public enum  PaymentStatus {
+public enum PaymentStatus {
     PAYMENT_APPROVED,
-    PAYMENT_REJECTED;
+    PAYMENT_REJECTED
 }

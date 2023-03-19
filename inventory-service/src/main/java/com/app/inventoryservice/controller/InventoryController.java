@@ -21,14 +21,14 @@ public class InventoryController {
 
     @PostMapping("/deduct")
     @ResponseStatus(HttpStatus.OK)
-    public InventoryResponse deduct(@RequestBody final InventoryRequest requestDTO){
+    public InventoryResponse deduct(@RequestBody final InventoryRequest requestDTO) {
         log.info("DEDUCT FROM INVENTORY");
         return this.service.deductInventory(requestDTO);
     }
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void add(@RequestBody InventoryRequest inventoryRequest){
+    public void add(@RequestBody InventoryRequest inventoryRequest) {
         this.service.addInventory(inventoryRequest);
     }
 

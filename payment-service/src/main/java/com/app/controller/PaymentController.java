@@ -6,10 +6,9 @@ import com.app.dto.PaymentResponse;
 import com.app.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -20,15 +19,20 @@ public class PaymentController {
     private PaymentService service;
 
     @PostMapping("/debit")
-    public PaymentResponse debit(@RequestBody PaymentRequest requestDTO){
+    public PaymentResponse debit(@RequestBody PaymentRequest requestDTO) {
         log.info("CALL DEBIT CONTROLLER");
         return this.service.debit(requestDTO);
     }
 
     @PostMapping("/credit")
-    public void credit(@RequestBody PaymentRequest requestDTO){
+    public void credit(@RequestBody PaymentRequest requestDTO) {
         log.info("CALL CREDIT CONTROLLER");
         this.service.credit(requestDTO);
+    }
+
+    @GetMapping("balance/{id}")
+    public BigDecimal getBalance(@PathVariable int id){
+       return service.getBalance(id);
     }
 
 }

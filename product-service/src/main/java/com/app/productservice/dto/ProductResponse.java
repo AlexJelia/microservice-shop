@@ -7,10 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/*it is a good practice to separate model entities and dtos
-you should not expose your model entities to the outside world
-Ex: what if we add two new business-required fields to the model
-that are not necessary outside?*/
 @Data
 @Builder
 @AllArgsConstructor

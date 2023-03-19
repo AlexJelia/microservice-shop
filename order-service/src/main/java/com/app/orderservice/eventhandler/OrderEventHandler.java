@@ -12,10 +12,11 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class OrderEventHandler {
     private final OrderEventUpdateService service;
+
     @Bean
-    public Consumer<OrchestratorResponse> eventConsumer(){
+    public Consumer<OrchestratorResponse> eventConsumer() {
         //listen order-updated-topic
         //will update order
-        return (orchestratorResponse)-> service.updateOrder(orchestratorResponse);
+        return (orchestratorResponse) -> service.updateOrder(orchestratorResponse);
     }
 }

@@ -21,32 +21,35 @@ public class PaymentService {
     private Map<Integer, BigDecimal> userBalanceMap;
 
     @PostConstruct
-    private void init(){
-        this.userBalanceMap = new HashMap<>();
-        this.userBalanceMap.put(1, BigDecimal.valueOf(5000));
-        this.userBalanceMap.put(2, BigDecimal.valueOf(1000));
-        this.userBalanceMap.put(3, BigDecimal.valueOf(6000));
+    private void init() {
+        userBalanceMap = new HashMap<>();
+        userBalanceMap.put(1, BigDecimal.valueOf(5000));
+        userBalanceMap.put(2, BigDecimal.valueOf(1000));
+        userBalanceMap.put(3, BigDecimal.valueOf(6000));
     }
 
-    public PaymentResponse debit(final PaymentRequest requestDTO){
-        BigDecimal balance = this.userBalanceMap.getOrDefault(requestDTO.getUserId(), BigDecimal.valueOf(0));
+    public PaymentResponse debit(final PaymentRequest requestDTO) {
+        BigDecimal balance = getBalance(requestDTO.getUserId());
         PaymentResponse response = PaymentResponse.builder()
                 .amount(requestDTO.getAmount())
                 .userId(requestDTO.getUserId())
                 .orderId(requestDTO.getOrderId())
                 .status(PaymentStatus.PAYMENT_REJECTED)
                 .build();
-        if(balance.compareTo(requestDTO.getAmount()) >=0) {
+        if (balance.compareTo(requestDTO.getAmount()) >= 0) {
             response.setStatus(PaymentStatus.PAYMENT_APPROVED);
-            this.userBalanceMap.put(requestDTO.getUserId(), balance.subtract(response.getAmount()));
+            userBalanceMap.put(requestDTO.getUserId(), balance.subtract(response.getAmount()));
             log.info("Payment Approved");
         }
         return response;
     }
 
-    public void credit(final PaymentRequest requestDTO){
+    public void credit(final PaymentRequest requestDTO) {
         log.info("Payment Rejected");
-        this.userBalanceMap.computeIfPresent(requestDTO.getUserId(), (k, v) ->requestDTO.getAmount().add(v));
+        userBalanceMap.computeIfPresent(requestDTO.getUserId(), (k, v) -> requestDTO.getAmount().add(v));
     }
 
+    public BigDecimal getBalance(int id) {
+       return userBalanceMap.getOrDefault(id, BigDecimal.valueOf(0));
+    }
 }

@@ -1,6 +1,6 @@
 package com.app.enums;
 
-public enum  InventoryStatus {
+public enum InventoryStatus {
     AVAILABLE,
-    UNAVAILABLE;
+    UNAVAILABLE
 }

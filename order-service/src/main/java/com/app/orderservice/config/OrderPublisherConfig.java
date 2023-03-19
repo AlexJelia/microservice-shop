@@ -12,12 +12,12 @@ import java.util.function.Supplier;
 public class OrderPublisherConfig {
 
     @Bean
-    public Sinks.Many<OrchestratorRequest> orderSinks(){
+    public Sinks.Many<OrchestratorRequest> orderSinks() {
         return Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @Bean
-    public Supplier<Flux<OrchestratorRequest>> orderSupplier(Sinks.Many<OrchestratorRequest> sinks){
-       return sinks::asFlux;
+    public Supplier<Flux<OrchestratorRequest>> orderSupplier(Sinks.Many<OrchestratorRequest> sinks) {
+        return sinks::asFlux;
     }
 }
